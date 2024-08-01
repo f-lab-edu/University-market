@@ -1,5 +1,7 @@
 package university.market.member.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,16 @@ public class MemberServiceImpl implements MemberService {
     public void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest) {
         emailVerificationService.checkVerificationCode(checkVerificationCodeRequest);
         memberMapper.updateAuth(checkVerificationCodeRequest.email(), AuthType.ROLE_VERIFY_USER);
+    }
+
+    @Override
+    public List<MemberVO> findMembersByIds(List<Long> ids) {
+        List<MemberVO> members = new ArrayList<>();
+        for (Long id : ids) {
+            members.add(memberMapper.findMemberById(id));
+        }
+
+        return members;
     }
 
     @Transactional(readOnly = true)

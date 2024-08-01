@@ -13,9 +13,11 @@ public interface MemberMapper {
 
     void deleteMemberByEmail(String email);
 
-    void deleteMemberById(Long id);
+    void deleteMemberById(long id);
 
     void updateAuth(String email, AuthType auth);
 
-    void updateMemberStatus(Long id, MemberStatus memberStatus);
+    void updateMemberStatus(long id, MemberStatus memberStatus);
+
+    MemberVO findMemberById(long id);
 }

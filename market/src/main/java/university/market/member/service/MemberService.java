@@ -1,6 +1,7 @@
 package university.market.member.service;
 
 
+import java.util.List;
 import university.market.member.domain.MemberVO;
 import university.market.member.domain.memberstatus.MemberStatus;
 import university.market.member.service.dto.request.JoinRequest;
@@ -24,6 +25,8 @@ public interface MemberService {
     void updateMemberStatus(Long id, MemberStatus memberStatus);
 
     void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest);
+
+    List<MemberVO> findMembersByIds(List<Long> ids);
 
     MemberVO findMemberByToken(String token);
 }

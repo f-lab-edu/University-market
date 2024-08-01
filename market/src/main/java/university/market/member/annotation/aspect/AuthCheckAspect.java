@@ -25,7 +25,8 @@ public class AuthCheckAspect {
     @Before("@annotation(university.market.member.annotation.AuthCheck)")
     public void checkAuth(JoinPoint joinPoint) {
         MemberVO currentUser;
-        if (joinPoint.getArgs()[0] instanceof WebSocketSession) {
+        Object[] args = joinPoint.getArgs();
+        if (args.length > 0 && args[0] instanceof WebSocketSession) {
             WebSocketSession session = (WebSocketSession) joinPoint.getArgs()[0];
             currentUser = httpRequest.getCurrentMember(session);
         } else {
