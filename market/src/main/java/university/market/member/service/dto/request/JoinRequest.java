@@ -1,10 +1,12 @@
 package university.market.member.service.dto.request;
 
-import lombok.Data;
+import lombok.Builder;
 
-public record JoinRequest (
-    String name,
-    String email,
-    String password,
-    String university
-){}
+@Builder
+public record JoinRequest(
+        String name,
+        String email,
+        String password,
+        String university
+) {
+}

@@ -43,10 +43,10 @@ public class ChatServiceImpl implements ChatService {
 
         chatMapper.createChat(chat);
 
-        request.memberEmails()
+        request.memberIds()
                 .forEach(
                         member -> {
-                            MemberVO memberVO = memberService.findMemberByEmail(member);
+                            MemberVO memberVO = memberService.findMemberById(member);
                             permissionCheck.hasPermission(
                                     () -> memberVO.getAuth().equals(AuthType.ROLE_USER));
                             chatMemberMapper.addMember(ChatMemberVO.builder()
@@ -101,10 +101,10 @@ public class ChatServiceImpl implements ChatService {
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @Override
-    public void addMember(@ChatAuth Long chatId, String memberEmail, MemberVO currentMember) {
+    public void addMember(@ChatAuth Long chatId, Long memberId, MemberVO currentMember) {
         chatMemberMapper.addMember(ChatMemberVO.builder()
                 .chat(chatMapper.getChat(chatId))
-                .member(memberService.findMemberByEmail(memberEmail))
+                .member(memberService.findMemberById(memberId))
                 .build());
     }
 

@@ -22,7 +22,7 @@ public class MemberVO {
 
     private String password;
 
-    private UniversityType university;
+    private int university;
 
     private AuthType auth;
 
@@ -32,13 +32,16 @@ public class MemberVO {
 
     private Timestamp updatedAt;
 
+    private boolean isDeleted;
+
     @Builder
     public MemberVO(String name, String email, String password, String university, AuthType auth) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.university = UniversityType.valueOf(university.toUpperCase());
+        this.university = UniversityType.valueOf(university.toUpperCase()).getValue();
         this.memberStatus = MemberStatus.OFFLINE;
         this.auth = auth;
+        this.isDeleted = false;
     }
 }

@@ -16,7 +16,8 @@ create table member(
       auth enum('ROLE_USER','ROLE_VERIFY_USER','ROLE_ADMIN') NOT NULL,
       member_status enum('ONLINE', 'OFFLINE') NOT NULL,
       created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      is_deleted boolean NOT NULL DEFAULT FALSE
 );
 
 create table email(

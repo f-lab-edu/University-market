@@ -17,7 +17,7 @@ public interface ChatService {
 
     void deleteChat(Long chatId, MemberVO currentMember);
 
-    void addMember(Long chatId, String memberEmail, MemberVO currentMember);
+    void addMember(Long chatId, Long memberId, MemberVO currentMember);
 
     void removeMember(Long chatId, Long memberId, MemberVO currentMember);
 

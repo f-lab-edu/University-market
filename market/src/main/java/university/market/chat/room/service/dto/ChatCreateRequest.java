@@ -7,6 +7,6 @@ import lombok.Builder;
 public record ChatCreateRequest(
         String title,
         Long itemId,
-        List<String> memberEmails
+        List<Long> memberIds
 ) {
 }

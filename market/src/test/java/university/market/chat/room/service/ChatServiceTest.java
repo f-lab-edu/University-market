@@ -22,7 +22,6 @@ import university.market.chat.room.exception.ChatException;
 import university.market.chat.room.exception.ChatExceptionType;
 import university.market.chat.room.mapper.ChatMapper;
 import university.market.chat.room.mapper.ChatMemberMapper;
-import university.market.chat.room.service.ChatServiceImpl;
 import university.market.chat.room.service.dto.ChatCreateRequest;
 import university.market.helper.fixture.ChatFixture;
 import university.market.helper.fixture.ChatMemberFixture;
@@ -81,13 +80,13 @@ public class ChatServiceTest {
 
         // mocking
         when(itemService.getItemById(item.getId())).thenReturn(item);
-        when(memberService.findMemberByEmail(testedMember.getEmail())).thenReturn(testedMember);
+        when(memberService.findMemberById(testedMember.getId())).thenReturn(testedMember);
 
         // when
         ChatVO chatVO = chatService.createChat(ChatCreateRequest.builder()
                 .title(chat.getTitle())
                 .itemId(item.getId())
-                .memberEmails(List.of(testedMember.getEmail()))
+                .memberIds(List.of(testedMember.getId()))
                 .build(), member);
 
         // then
@@ -100,7 +99,7 @@ public class ChatServiceTest {
         // given
         MemberVO testedMember = MemberFixture.testIdMember(AuthType.ROLE_USER);
         MemberVO testedMember2 = MemberFixture.testIdMember(AuthType.ROLE_USER);
-        List<String> memberEmails = List.of(testedMember.getEmail(), testedMember2.getEmail());
+        List<Long> memberIds = List.of(testedMember.getId(), testedMember2.getId());
 
         // mocking
         when(itemService.getItemById(item.getId())).thenReturn(item);
@@ -111,7 +110,7 @@ public class ChatServiceTest {
             chatService.createChat(ChatCreateRequest.builder()
                     .title(chat.getTitle())
                     .itemId(item.getId())
-                    .memberEmails(memberEmails)
+                    .memberIds(memberIds)
                     .build(), member);
         });
 

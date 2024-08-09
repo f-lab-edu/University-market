@@ -20,16 +20,17 @@ public class JwtTokenProviderImpl implements JwtTokenProvider{
     private String secretKey;
     @Value("${security.jwt.expire-length}")
     private int expireTimeMilliSecond;
+    private final String MEMBER_ID = "memberId";
 
     @Override
-    public String generateToken(final String email) {
-        return generateToken(email, () -> new Date(new Date().getTime() + expireTimeMilliSecond));
+    public String generateToken(final long memberId) {
+        return generateToken(memberId, () -> new Date(new Date().getTime() + expireTimeMilliSecond));
     }
 
     @Override
-    public String generateToken(final String email, final ExpireDateSupplier expireDateSupplier) {
+    public String generateToken(final long memberId, final ExpireDateSupplier expireDateSupplier) {
         return Jwts.builder()
-                .claim("email", email)
+                .claim(MEMBER_ID, memberId)
                 .expiration(expireDateSupplier.expireDate())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
@@ -47,14 +48,16 @@ public class JwtTokenProviderImpl implements JwtTokenProvider{
     }
 
     @Override
-    public String extractEmail(final String token) {
+    public long extractMemberId(final String token) {
         try {
-            return Jwts.parser()
+            return Long.parseLong(
+                    Jwts.parser()
                     .setSigningKey(secretKey).build()
                     .parseClaimsJws(token)
                     .getBody()
-                    .get("email")
-                    .toString();
+                    .get(MEMBER_ID)
+                    .toString()
+            );
 
         } catch (RuntimeException e) {
             throw new MemberException(MemberExceptionType.INVALID_ACCESS_TOKEN);

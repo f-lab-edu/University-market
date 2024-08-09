@@ -10,63 +10,53 @@
         <result property="name" column="name"/>
         <result property="email" column="email"/>
         <result property="password" column="password"/>
-        <result property="university" column="university"
-                typeHandler="university.market.member.mapper.UniversityTypeHandler"/>
+        <result property="university" column="university"/>
         <result property="auth" column="auth"/>
         <result property="memberStatus" column="member_status"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="isDeleted" column="is_deleted"/>
     </resultMap>
+
+    <insert id="joinMember" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO member (name, email, password, university, auth, member_status)
+        VALUES (#{name}, #{email}, #{password},
+                #{university}, #{auth}, #{memberStatus})
+    </insert>
 
     <select id="findMemberByEmail" resultMap="MemberResultMap">
         SELECT *
         FROM member
         WHERE email = #{email}
+          AND is_deleted = false
     </select>
 
     <select id="findMemberById" resultMap="MemberResultMap">
         SELECT *
         FROM member
         WHERE id = #{id}
+          AND is_deleted = false
     </select>
-
-    <insert id="joinMember" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO member (name, email, password, university, auth, member_status, created_at, updated_at)
-        VALUES (#{name}, #{email}, #{password},
-                #{university, typeHandler=university.market.member.mapper.UniversityTypeHandler}, #{auth},
-                #{memberStatus},
-                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    </insert>
-
-    <select id="loginMember" resultMap="MemberResultMap">
-        SELECT *
-        FROM member
-        WHERE email = #{email}
-          AND password = #{password}
-    </select>
-
-    <delete id="deleteMemberByEmail">
-        DELETE
-        FROM member
-        WHERE email = #{email}
-    </delete>
 
     <delete id="deleteMemberById">
-        DELETE
-        FROM member
+        UPDATE member
+        SET is_deleted = true
         WHERE id = #{id}
+          AND is_deleted = false
     </delete>
 
     <update id="updateMemberStatus">
         UPDATE member
         SET member_status = #{memberStatus}
         WHERE id = #{id}
+          AND is_deleted = false
     </update>
 
     <update id="updateAuth">
         UPDATE member
         SET auth = #{auth}
         WHERE email = #{email}
+          AND is_deleted = false
     </update>
 
 </mapper>

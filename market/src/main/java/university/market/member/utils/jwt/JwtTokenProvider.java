@@ -1,12 +1,12 @@
 package university.market.member.utils.jwt;
 public interface JwtTokenProvider {
 
-    String generateToken(String email);
+    String generateToken(long memberId);
 
-    String generateToken(String email, ExpireDateSupplier expireDateSupplier);
+    String generateToken(long email, ExpireDateSupplier expireDateSupplier);
 
     void validateToken(String token);
 
-    String extractEmail(String token);
+    long extractMemberId(String token);
 
 }

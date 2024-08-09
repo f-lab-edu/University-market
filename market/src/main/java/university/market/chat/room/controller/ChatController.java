@@ -60,8 +60,8 @@ public class ChatController {
 
     @AuthCheck({AuthType.ROLE_VERIFY_USER, AuthType.ROLE_ADMIN})
     @PostMapping("/{chatId}")
-    public ResponseEntity<Void> addMember(@PathVariable Long chatId, @RequestBody String memberEmail) {
-        chatService.addMember(chatId, memberEmail, httpRequest.getCurrentMember());
+    public ResponseEntity<Void> addMember(@PathVariable Long chatId, @RequestBody long memberId) {
+        chatService.addMember(chatId, memberId, httpRequest.getCurrentMember());
         return ResponseEntity.ok().build();
     }
 

@@ -89,7 +89,7 @@ public class SocketConnectionTest {
     @Test
     public void testWebSocketConnection() throws Exception {
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        String token = jwtTokenProvider.generateToken(buyer.getEmail());
+        String token = jwtTokenProvider.generateToken(buyer.getId());
         headers.add("Authorization", "Bearer " + token);
 
         StandardWebSocketClient client = new StandardWebSocketClient();

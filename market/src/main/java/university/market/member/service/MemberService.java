@@ -15,15 +15,13 @@ public interface MemberService {
 
     LoginResponse loginMember(LoginRequest loginRequest);
 
-    MemberVO findMemberByEmail(String email);
+    MemberVO findMemberById(long memberId);
 
-    void deleteMember(Long id);
+    void deleteMember(long memberId);
 
-    void deleteMyself(String token);
+    void deleteMyself(MemberVO memberVO);
 
-    void updateMemberStatus(Long id, MemberStatus memberStatus);
+    void updateMemberStatus(long memberId, MemberStatus memberStatus);
 
     void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest);
-
-    MemberVO findMemberByToken(String token);
 }

@@ -7,7 +7,7 @@ import org.springframework.web.socket.WebSocketSession;
 import university.market.member.domain.MemberVO;
 import university.market.member.exception.MemberException;
 import university.market.member.exception.MemberExceptionType;
-import university.market.member.mapper.MemberMapper;
+import university.market.member.service.MemberService;
 import university.market.member.utils.jwt.JwtTokenProvider;
 
 @Component
@@ -19,10 +19,16 @@ public class HttpRequestImpl implements HttpRequest {
     private HttpServletRequest request;
 
     @Autowired
-    private MemberMapper memberMapper;
+    private MemberService memberService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    private final String header = "Authorization";
+
+    private final String prefixToken = "Bearer ";
+
+    private final String socketToken = "token";
 
     @Override
     public MemberVO getCurrentMember() {
@@ -31,7 +37,7 @@ public class HttpRequestImpl implements HttpRequest {
         }
 
         String token = getTokenFromRequest(request, null);
-        MemberVO member = memberMapper.findMemberByEmail(jwtTokenProvider.extractEmail(token));
+        MemberVO member = memberService.findMemberById(jwtTokenProvider.extractMemberId(token));
         currentUser.set(member);
         return currentUser.get();
     }
@@ -47,7 +53,7 @@ public class HttpRequestImpl implements HttpRequest {
         }
 
         String token = getTokenFromRequest(null, session);
-        MemberVO member = memberMapper.findMemberByEmail(jwtTokenProvider.extractEmail(token));
+        MemberVO member = memberService.findMemberById(jwtTokenProvider.extractMemberId(token));
         currentUser.set(member);
         return currentUser.get();
     }
@@ -56,13 +62,13 @@ public class HttpRequestImpl implements HttpRequest {
     private String getTokenFromRequest(HttpServletRequest request, WebSocketSession session) {
         String token = null;
         if (request != null) {
-            token = request.getHeader("Authorization");
+            token = request.getHeader(header);
         }
 
         if (session != null) {
-            token = String.valueOf(session.getAttributes().get("token"));
+            token = String.valueOf(session.getAttributes().get(socketToken));
         }
-        if (token == null || !token.startsWith("Bearer ")) {
+        if (token == null || !token.startsWith(prefixToken)) {
             throw new MemberException(MemberExceptionType.INVALID_ACCESS_TOKEN);
         }
 

@@ -4,8 +4,4 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-    <typeHandlers>
-        <typeHandler handler="university.market.member.mapper.UniversityTypeHandler" javaType="university.market.member.domain.university.UniversityType"/>
-        <typeHandler handler="university.market.member.mapper.AuthTypeHandler" javaType="university.market.member.domain.auth.AuthType"/>
-    </typeHandlers>
 </configuration>

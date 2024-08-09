@@ -1,6 +1,5 @@
 package university.market.member.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +15,7 @@ import university.market.member.service.MemberService;
 import university.market.member.service.dto.request.JoinRequest;
 import university.market.member.service.dto.request.LoginRequest;
 import university.market.member.service.dto.response.LoginResponse;
+import university.market.member.utils.http.HttpRequest;
 import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 
 @RestController
@@ -23,6 +23,7 @@ import university.market.verify.email.service.dto.CheckVerificationCodeRequest;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final HttpRequest httpRequest;
 
     @PostMapping("/join")
     public ResponseEntity<Void> joinMember(@RequestBody JoinRequest joinRequest) {
@@ -45,7 +46,8 @@ public class MemberController {
 
     @AuthCheck(AuthType.ROLE_USER)
     @PostMapping("/verify")
-    public ResponseEntity<Void> memberEmailVerify(@RequestBody CheckVerificationCodeRequest checkVerificationCodeRequest) {
+    public ResponseEntity<Void> memberEmailVerify(
+            @RequestBody CheckVerificationCodeRequest checkVerificationCodeRequest) {
         memberService.verifyEmailUser(checkVerificationCodeRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -59,9 +61,8 @@ public class MemberController {
 
     @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_USER})
     @DeleteMapping("/")
-    public ResponseEntity<Void> deleteMyself(HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        memberService.deleteMyself(token);
+    public ResponseEntity<Void> deleteMyself() {
+        memberService.deleteMyself(httpRequest.getCurrentMember());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -1,6 +1,8 @@
 package university.market.member.domain.university;
 
 import lombok.Getter;
+import university.market.member.exception.MemberException;
+import university.market.member.exception.MemberExceptionType;
 
 @Getter
 public enum UniversityType {
@@ -22,6 +24,6 @@ public enum UniversityType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("없는 UniversityType 입니다. value = " + value);
+        throw new MemberException(MemberExceptionType.NOT_FOUND_UNIVERSITY);
     }
 }

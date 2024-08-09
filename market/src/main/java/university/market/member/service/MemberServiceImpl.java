@@ -38,8 +38,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void joinUser(JoinRequest joinRequest, AuthType authType) {
-        if (memberMapper.findMemberByEmail(joinRequest.email()) != null) {
-            throw new MemberException(MemberExceptionType.ALREADY_EXISTED_MEMBER);
+
+        try {
+            if (memberMapper.findMemberByEmail(joinRequest.email()).isPresent()) {
+                throw new MemberException(MemberExceptionType.ALREADY_EXISTED_MEMBER);
+            }
+        } catch (MemberException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MemberException(MemberExceptionType.DATABASE_ERROR);
         }
 
         final MemberVO memberVO = MemberVO.builder()
@@ -61,50 +68,61 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void verifyEmailUser(CheckVerificationCodeRequest checkVerificationCodeRequest) {
         emailVerificationService.checkVerificationCode(checkVerificationCodeRequest);
-        memberMapper.updateAuth(checkVerificationCodeRequest.email(), AuthType.ROLE_VERIFY_USER);
+
+        try {
+            memberMapper.updateAuth(checkVerificationCodeRequest.email(), AuthType.ROLE_VERIFY_USER);
+        } catch (Exception e) {
+            throw new MemberException(MemberExceptionType.DATABASE_ERROR);
+        }
     }
 
     @Transactional(readOnly = true)
     public LoginResponse loginMember(LoginRequest loginRequest) {
-        final MemberVO member = memberMapper.findMemberByEmail(loginRequest.email());
-        if (member == null || !passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
+        final MemberVO member = memberMapper.findMemberByEmail(loginRequest.email())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (!passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
             throw new MemberException(MemberExceptionType.INVALID_LOGIN_CREDENTIALS);
         }
 
         return LoginResponse.builder()
                 .memberId(member.getId())
-                .token(jwtTokenProvider.generateToken(member.getEmail()))
+                .token(jwtTokenProvider.generateToken(member.getId()))
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public MemberVO findMemberByEmail(String email) {
-        return memberMapper.findMemberByEmail(email);
+    public MemberVO findMemberById(long memberId) {
+        return memberMapper.findMemberById(memberId)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     @AuthCheck({AuthType.ROLE_ADMIN})
     @Transactional
-    public void deleteMember(Long id) {
-        memberMapper.deleteMemberById(id);
+    public void deleteMember(long memberId) {
+        try {
+            memberMapper.deleteMemberById(memberId);
+        } catch (RuntimeException e) {
+            throw new MemberException(MemberExceptionType.DATABASE_ERROR);
+        }
     }
 
     @AuthCheck({AuthType.ROLE_ADMIN, AuthType.ROLE_VERIFY_USER, AuthType.ROLE_USER})
     @Transactional
-    public void deleteMyself(String token) {
-        memberMapper.deleteMemberByEmail(jwtTokenProvider.extractEmail(token));
+    public void deleteMyself(MemberVO member) {
+        try {
+            memberMapper.deleteMemberById(member.getId());
+        } catch (RuntimeException e) {
+            throw new MemberException(MemberExceptionType.DATABASE_ERROR);
+        }
     }
 
     @Override
     @Transactional
-    public void updateMemberStatus(Long id, MemberStatus memberStatus) {
-        memberMapper.updateMemberStatus(id, memberStatus);
-    }
-
-    @Override
-    @Transactional
-    public MemberVO findMemberByToken(String token) {
-        jwtTokenProvider.validateToken(token);
-        String email = jwtTokenProvider.extractEmail(token);
-        return memberMapper.findMemberByEmail(email);
+    public void updateMemberStatus(long memberId, MemberStatus memberStatus) {
+        try {
+            memberMapper.deleteMemberById(memberId);
+        } catch (RuntimeException e) {
+            throw new MemberException(MemberExceptionType.DATABASE_ERROR);
+        }
     }
 }

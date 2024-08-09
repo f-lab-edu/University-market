@@ -31,11 +31,13 @@ public class MemberFixture {
 
     public static MemberVO testMember(AuthType authType) {
         return MemberVO.builder()
-                .name(randomUtil.generateRandomCode('0', 'z', 10))
-                .email(randomUtil.generateRandomCode('0', 'z', 10) + "@" + randomUtil.generateRandomCode('A', 'z', 10)
-                        + randomUtil.generateRandomCode('A', 'z', 3))
-                .password(passwordEncoder.encode(randomUtil.generateRandomCode('0', 'z', 10)))
-                .university(UniversityType.SEOUL.name())
+                .name(randomUtil.generateRandomCountCode('A', 'z', 1, 255))
+                .email(randomUtil.generateRandomCountCode('A', 'z', 1, 50)
+                        + "@" + randomUtil.generateRandomCountCode('A', 'z', 1, 20)
+                        + randomUtil.generateRandomCountCode('A', 'z', 1, 10))
+                .password(passwordEncoder.encode(randomUtil.generateRandomCountCode('A', 'z', 1, 50)))
+                .university(String.valueOf(UniversityType.values()[
+                        randomUtil.generateRandomIntCode(0, UniversityType.values().length - 1)]))
                 .auth(authType)
                 .build();
     }
@@ -43,15 +45,18 @@ public class MemberFixture {
     public static MemberVO testIdMember(AuthType authType) {
         return new MemberVO(
                 Long.parseLong(randomUtil.generateRandomCode('0', '9', 16)),
-                randomUtil.generateRandomCode('0', 'z', 10),
-                randomUtil.generateRandomCode('0', 'z', 10) + "@" + randomUtil.generateRandomCode('A', 'z', 10)
-                        + randomUtil.generateRandomCode('A', 'z', 3),
-                passwordEncoder.encode(randomUtil.generateRandomCode('0', 'z', 10)),
-                UniversityType.SEOUL,
+                randomUtil.generateRandomCountCode('A', 'z', 1, 255),
+                randomUtil.generateRandomCountCode('A', 'z', 1, 50)
+                        + "@" + randomUtil.generateRandomCountCode('A', 'z', 1, 20)
+                        + randomUtil.generateRandomCountCode('A', 'z', 1, 10),
+                passwordEncoder.encode(randomUtil.generateRandomCountCode('A', 'z', 1, 50)),
+                UniversityType.values()[
+                        randomUtil.generateRandomIntCode(0, UniversityType.values().length - 1)].getValue(),
                 authType,
                 MemberStatus.OFFLINE,
                 new Timestamp(System.currentTimeMillis()),
-                new Timestamp(System.currentTimeMillis())
+                new Timestamp(System.currentTimeMillis()),
+                false
         );
     }
 }
